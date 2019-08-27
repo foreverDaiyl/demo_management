@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div class="login-wrap">
-            <h3>后台管理系统</h3>
+            <h3>hello ele</h3>
             <div>
                 <el-form :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" label-width="100px" class="demo-ruleForm">
                     <el-form-item label="用户名" prop="name">
