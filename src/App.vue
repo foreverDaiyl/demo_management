@@ -21,7 +21,7 @@ html,
 body {
   height: 100%;
   width: 100%;
-  overflow: hidden;
+  overflow-y: auto;
   .page-component__scroll {
     height: 100%;
   }

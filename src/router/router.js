@@ -14,8 +14,13 @@ export default new Router({
     },
     {
       path: '/login',
-      name: 'Login',
+      name: 'login',
       component: () => import('../page/login/index.vue')
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: () => import('../page/register/index.vue')
     },
     {
       path:'/manage',

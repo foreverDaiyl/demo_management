@@ -3,8 +3,8 @@
     <h2 class="title">
       <span>Hello ele 后台管理系统</span>
     </h2>
-    <div class="login-wrap">
-      <h3>用户登录</h3>
+    <div class="login-wrap register-wrap">
+      <h3>用户注册</h3>
       <div>
         <el-form
           :model="ruleForm2"
@@ -20,13 +20,15 @@
           <el-form-item label="密码" prop="pass">
             <el-input type="password" v-model="ruleForm2.pass" auto-complete="off"></el-input>
           </el-form-item>
-
+          <el-form-item label="确认密码" prop="checkPass">
+            <el-input type="password" v-model="ruleForm2.checkPass" auto-complete="off"></el-input>
+          </el-form-item>
           <el-form-item class="login-submit">
-            <el-button type="primary" @click="submitForm('ruleForm2')">登 录</el-button>
+            <el-button type="primary" @click="submitForm('ruleForm2')">注 册</el-button>
           </el-form-item>
         </el-form>
         <div class="toggle-link">
-            <router-link :to="{path:'register'}" tag="span">还没账号？立即去注册</router-link>
+            <router-link :to="{path:'login'}" tag="span">已有账号，立即去登录</router-link>
         </div>
       </div>
     </div>
@@ -34,8 +36,7 @@
 </template>
 
 <script>
-import { login } from "@/api/session.js";
-import {mapMutations} from 'vuex'
+import { register } from "@/api/session.js";
 export default {
   data() {
     var checkName = (rule, value, callback) => {
@@ -50,62 +51,68 @@ export default {
       }
       callback();
     };
+    var validatePass2 = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请再次输入密码"));
+      } else if (value !== this.ruleForm2.pass) {
+        callback(new Error("两次输入密码不一致!"));
+      } else {
+        callback();
+      }
+    };
     return {
       ruleForm2: {
         pass: "",
-        name: ""
+        name: "",
+        checkPass:''
       },
       rules2: {
         pass: [{ validator: validatePass, trigger: "blur" }],
+          checkPass: [
+            { validator: validatePass2, trigger: 'blur' }
+          ],
         name: [{ validator: checkName, trigger: "blur" }]
       }
     };
-  },
-  beforeRouteEnter:(to,from,next) => {
-      //组件内守卫
-      //已登录状态回到登录界面，即 登出
-    next(vm => {
-       vm.$store.dispatch("setUser",null);
-    });
   },
   methods: {
     async submitForm(formName) {
       this.$refs[formName].validate(async valid => {
         if (valid) {
-          let res = await login({
+          let res = await register({
             username: this.ruleForm2.name,
             password: this.ruleForm2.pass
           });
-        //   console.log(res);
+          // console.log(res);
+          
           if (res.code === 0) {
             this.$message({
-                type: "success",
-                message: res.msg
-            });
+              type:'success',
+              message:'注册成功'
+            })
+            console.log(res)
             sessionStorage.setItem('userName',res.user.username)
             sessionStorage.setItem('userToken',res.user.userToken)
             
-            this.$store.dispatch('setUser',res.user.username)
-            this.$store.dispatch('setToken',res.user.userToken)
-            
-            this.$router.push({path:'/manage'});
+            // this.$store.dispatch('setUser',res.user.username)
+            // this.$store.dispatch('setToken',res.user.userToken)
+            this.$router.push("/manage");
           } else {
             this.$message({
               type: "error",
               message: res.msg
             });
+            this.ruleForm2.name =this.ruleForm2.pass=this.ruleForm2.checkPass="";
           }
+
+          //
         } else {
-          this.$notify.error({
-            title: "错误",
-            message: "请输入正确的用户名密码"
-          });
+          console.log("error submit!!");
           return false;
         }
       });
     }
   }
-  
 };
 </script>
 
@@ -114,6 +121,7 @@ export default {
   width: 100%;
   height: 100%;
   background-color: #324057;
+
   h2.title {
     color: #fff;
     padding-top: 110px;
@@ -125,23 +133,23 @@ export default {
     margin-bottom: 10px;
   }
 
-  .login-wrap {
+  .login-wrap.register-wrap {
     width: 320px;
-    height: 240px;
+    height: 300px;
     position: absolute;
     top: 50%;
     left: 50%;
     margin-left: -185px;
-    margin-top: -120px;
+    margin-top: -150px;
     background-color: #fff;
     border-radius: 5px;
     padding: 25px;
 
     .el-form-item__label {
-      width: 60px !important;
+      width: 80px !important;
     }
     .el-form-item__content {
-      margin-left: 60px !important;
+      margin-left: 80px !important;
     }
     .login-submit .el-form-item__content {
       text-align: center;
@@ -155,5 +163,6 @@ export default {
     text-decoration: underline;
     cursor:pointer;
   }
+  
 }
 </style>

@@ -31,6 +31,7 @@
 
 <script>
 import headTop from "@/components/headTop/headTop.vue";
+import {getUsers} from '../api/dataManage.js'
 export default {
   data() {
     return {
@@ -66,7 +67,14 @@ export default {
   components: {
     headTop
   },
+  created(){
+    this.getUserList()
+  },
   methods: {
+    async getUserList(){
+      let res=await getUsers()
+      this.tableData=res.user
+    },
     handleCurrentChange(val) {
       this.currentRow = val;
     },
